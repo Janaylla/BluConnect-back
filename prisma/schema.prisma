@@ -1,0 +1,40 @@
+datasource bluconnect {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Gerador para o Prisma Client
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Trip {
+  id               Int       @id @default(autoincrement())
+  tripNumber       String
+  startPoint       String
+  endPoint         String
+  estimatedTime    Int       
+  cost             Float 
+  startTime        DateTime
+  endTime          DateTime
+  busRoutes  BusRoute[] @relation("OriginBusRoutes")
+}
+
+model BusStop {
+  id        Int      @id @default(autoincrement())
+  latitude  Float
+  longitude Float
+  busRoutesStart   BusRoute[] @relation("StartBusStop")
+  busRoutesEnd     BusRoute[] @relation("EndBusStop")
+}
+
+model BusRoute {
+  id              Int       @id @default(autoincrement())
+  index           Int
+  trip            Trip      @relation("OriginBusRoutes", fields: [tripId], references: [id])
+  tripId          Int
+  startBusStop    BusStop   @relation("StartBusStop", fields: [startBusStopId], references: [id])
+  startBusStopId  Int
+  endBusStop      BusStop   @relation("EndBusStop", fields: [endBusStopId], references: [id])
+  endBusStopId    Int
+}
