@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, Query } from '@nestjs/common';
 import { BusStopService } from './busStop.service';
-import { BusStopDTO } from './busStop.dto';
+import { BusStopDTO, BusStopSearchDTO } from './busStop.dto';
 
 @Controller('bus-stops')
 export class BusStopController {
@@ -12,8 +12,10 @@ export class BusStopController {
   }
 
   @Get()
-  async listBusStops() {
-    return this.busStopService.listBusStops();
+  async listBusStops(
+    @Query() query: BusStopSearchDTO
+  ) {
+    return this.busStopService.listBusStops(query);
   }
 
   @Get(':id')

@@ -1,4 +1,3 @@
-
 import { Injectable } from '@nestjs/common';
 import { TripDTO } from './trip.dto';
 import { PrismaService } from 'src/database/PrismaService';

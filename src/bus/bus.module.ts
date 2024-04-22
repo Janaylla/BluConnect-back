@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TripController } from './trip/trip.controller';
 import { BusStopController } from './busStop/busStop.controller';
 import { BusRouteController } from './busRoute/busRoute.controller';
