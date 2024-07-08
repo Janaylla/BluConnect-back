@@ -1,20 +1,34 @@
-import { IsString, IsNumber, IsOptional, Min } from "class-validator";
+import {
+  IsString,
+  IsNumber,
+  IsOptional,
+  Min,
+  IsNotEmpty,
+} from 'class-validator';
 
-export interface BusStopDTO {
+export class BusStopDTO {
+  @IsNumber()
+  @IsNotEmpty()
   latitude: number;
+
+  @IsNumber()
+  @IsNotEmpty()
   longitude: number;
+
+  @IsString()
+  @IsNotEmpty()
   name: string;
 }
 export class BusStopSearchDTO {
-   @IsString()
-   search: string;
+  @IsString()
+  search: string;
 
-   @IsOptional()
-   @IsNumber()
-   limit: number = 10;
+  @IsOptional()
+  @IsNumber()
+  limit: number = 10;
 
-   @IsOptional()
-   @IsNumber()
-   @Min(1)
-   page: number = 1;
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  page: number = 1;
 }

@@ -1,8 +1,15 @@
-
-import { Controller, Get, Post, Body, Param, Put, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { BusRouteService } from './busRoute.service';
 import { BusRouteDTO, RouteSearchDTO } from './busRoute.dto';
-import { query } from 'express';
 
 @Controller('bus-routes')
 export class BusRouteController {
@@ -13,9 +20,9 @@ export class BusRouteController {
     return this.busRouteService.createBusRoute(busRouteDTO);
   }
 
-  @Get()
-  async listRoutes(@Query() query: RouteSearchDTO) {
-    return this.busRouteService.listRoutes(query);
+  @Get('possible-routes')
+  async listRoutesPossibleRoutes(@Query() query: RouteSearchDTO) {
+    return this.busRouteService.listRoutesPossibleRoutes(query);
   }
 
   @Get(':id')
@@ -24,7 +31,10 @@ export class BusRouteController {
   }
 
   @Put(':id')
-  async updateBusRoute(@Param('id') id: string, @Body() busRouteDTO: BusRouteDTO) {
+  async updateBusRoute(
+    @Param('id') id: string,
+    @Body() busRouteDTO: BusRouteDTO,
+  ) {
     return this.busRouteService.updateBusRoute(Number(id), busRouteDTO);
   }
 

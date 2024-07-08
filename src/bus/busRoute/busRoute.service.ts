@@ -18,13 +18,13 @@ export class BusRouteService {
     return await this.prisma.busRoute.findMany();
   }
 
-  async listRoutes(query: RouteSearchDTO) {
+  async listRoutesPossibleRoutes(query: RouteSearchDTO) {
     const { from_id, to_id } = query;
     const to = await this.prisma.busRoute.findFirstOrThrow({
       where: { OR: [{ startBusStopId: +from_id }, { endBusStopId: +from_id }] },
     });
     const from = await this.prisma.busRoute.findFirstOrThrow({
-      where:  { OR: [{ startBusStopId: +to_id }, { endBusStopId: +to_id }] },
+      where: { OR: [{ startBusStopId: +to_id }, { endBusStopId: +to_id }] },
     });
     const max = to.index > from.index ? to.index : from.index;
     const min = to.index < from.index ? to.index : from.index;

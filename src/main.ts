@@ -8,6 +8,8 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
-  await app.listen(3000);
+  await app
+    .listen(4000)
+    .then(() => console.log('Server is running on http://localhost:4000'));
 }
 bootstrap();

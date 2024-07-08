@@ -10,6 +10,7 @@ generator client {
 model Trip {
   id               Int       @id @default(autoincrement())
   tripNumber       Int
+  name             String   @unique
   busRoutes  BusRoute[] @relation("OriginBusRoutes")
 }
 
