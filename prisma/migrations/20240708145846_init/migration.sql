@@ -1,7 +1,7 @@
 -- CreateTable
 CREATE TABLE "Trip" (
     "id" SERIAL NOT NULL,
-    "tripNumber" INTEGER NOT NULL,
+    "code" TEXT NOT NULL,
 
     CONSTRAINT "Trip_pkey" PRIMARY KEY ("id")
 );
@@ -9,6 +9,7 @@ CREATE TABLE "Trip" (
 -- CreateTable
 CREATE TABLE "BusStop" (
     "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
     "latitude" DOUBLE PRECISION NOT NULL,
     "longitude" DOUBLE PRECISION NOT NULL,
 

@@ -21,6 +21,11 @@ export class BusRouteController {
   }
 
   @Get('possible-routes')
+  async listBusRoutes(@Query() query: RouteSearchDTO) {
+    return this.busRouteService.listRoutesPossibleRoutes(query);
+  }
+
+  @Get('possible-routes')
   async listRoutesPossibleRoutes(@Query() query: RouteSearchDTO) {
     return this.busRouteService.listRoutesPossibleRoutes(query);
   }

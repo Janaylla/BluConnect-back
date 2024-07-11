@@ -1,21 +1,13 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { BusRouteDTO, RouteSearchDTO } from './busRoute.dto';
 import { PrismaService } from 'src/database/PrismaService';
-import { BusStopService } from '../busStop/busStop.service';
 
 @Injectable()
 export class BusRouteService {
-  constructor(
-    private prisma: PrismaService,
-    @Inject(BusStopService) private busStopService: BusStopService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async createBusRoute(data: BusRouteDTO) {
     return await this.prisma.busRoute.create({ data });
-  }
-
-  async listBusRoutes() {
-    return await this.prisma.busRoute.findMany();
   }
 
   async listRoutesPossibleRoutes(query: RouteSearchDTO) {
@@ -44,10 +36,6 @@ export class BusRouteService {
         endBusStop: true,
       },
     });
-    console.log(
-      'routes',
-      routes.map((route) => route.endBusStop),
-    );
     return routes;
   }
   async getBusRoute(id: number) {

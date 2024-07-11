@@ -9,7 +9,7 @@ async function bootstrap() {
     credentials: true,
   });
   await app
-    .listen(4000)
-    .then(() => console.log('Server is running on http://localhost:4000'));
+    .listen(4001)
+    .then(() => console.log('Server is running on http://localhost:4001'));
 }
 bootstrap();

@@ -1,20 +1,29 @@
-
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { TripService } from './trip.service';
-import { TripDTO } from './trip.dto';
+import { TripCreateDTO } from './trip.dto';
+import { BusStopSearchDTO } from '../busStop/busStop.dto';
 
 @Controller('trips')
 export class TripController {
   constructor(private tripService: TripService) {}
 
   @Post()
-  async createTrip(@Body() tripDTO: TripDTO) {
+  async createTrip(@Body() tripDTO: TripCreateDTO) {
     return this.tripService.createTrip(tripDTO);
   }
 
   @Get()
-  async listTrips() {
-    return this.tripService.listTrips();
+  async listTrips(@Query() query: BusStopSearchDTO) {
+    return this.tripService.listTrips(query);
   }
 
   @Get(':id')
@@ -23,7 +32,7 @@ export class TripController {
   }
 
   @Put(':id')
-  async updateTrip(@Param('id') id: string, @Body() tripDTO: TripDTO) {
+  async updateTrip(@Param('id') id: string, @Body() tripDTO: TripCreateDTO) {
     return this.tripService.updateTrip(Number(id), tripDTO);
   }
 

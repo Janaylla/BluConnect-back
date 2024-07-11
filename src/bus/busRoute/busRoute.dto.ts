@@ -6,6 +6,20 @@ export class BusRouteDTO {
   readonly endBusStopId: number;
 }
 
+export class BusRouteCreateDTO {
+  @IsNotEmpty()
+  readonly index: number;
+
+  @IsNotEmpty()
+  readonly tripId: number;
+
+  @IsNotEmpty()
+  readonly startBusStopId: number;
+
+  @IsNotEmpty()
+  readonly endBusStopId: number;
+}
+
 export class RouteSearchDTO {
   @IsNotEmpty()
   from_id: number;

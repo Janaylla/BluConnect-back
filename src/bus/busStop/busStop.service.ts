@@ -14,8 +14,7 @@ export class BusStopService {
     const pageSize = limit;
 
     const skip = (page - 1) * pageSize;
-    console.log('skip', skip, page, pageSize);
-    return await this.prisma.busStop.findMany({
+    const rows = await this.prisma.busStop.findMany({
       orderBy: {
         name: 'asc',
       },
@@ -28,6 +27,15 @@ export class BusStopService {
       take: +pageSize,
       skip,
     });
+    const count = await this.prisma.busStop.count({
+      where: {
+        name: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      },
+    });
+    return { rows, count };
   }
 
   async getBusStop(id: number) {
