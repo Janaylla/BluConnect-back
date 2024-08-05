@@ -6,10 +6,12 @@ import { TripService } from './trip/trip.service';
 import { BusStopService } from './busStop/busStop.service';
 import { BusRouteService } from './busRoute/busRoute.service';
 import { PrismaService } from 'src/database/PrismaService';
+import { TravelScheduleController } from './travelSchedule/travelSchedule.controller';
+import { TravelScheduleService } from './travelSchedule/travelSchedule.service';
 @Module({
   imports: [],
-  controllers: [TripController, BusStopController, BusRouteController],
-  providers: [TripService, BusStopService, BusRouteService, PrismaService],
-  exports: [TripService, BusStopService, BusRouteService, PrismaService],
+  controllers: [TripController, BusStopController, BusRouteController, TravelScheduleController],
+  providers: [TripService, BusStopService, BusRouteService, PrismaService, TravelScheduleService],
+  exports: [TripService, BusStopService, BusRouteService, PrismaService, TravelScheduleService],
 })
-export class BusModule {}
+export class BusModule { }

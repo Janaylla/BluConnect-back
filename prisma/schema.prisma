@@ -11,6 +11,8 @@ model Trip {
   id        Int        @id @default(autoincrement())
   code      String     @unique
   busRoutes BusRoute[] @relation("OriginBusRoutes")
+
+  TralvelSchedules TravelSchedule[]
 }
 
 model BusStop {
@@ -31,4 +33,18 @@ model BusRoute {
   startBusStopId Int
   endBusStop     BusStop @relation("EndBusStop", fields: [endBusStopId], references: [id], onDelete: Cascade)
   endBusStopId   Int
+}
+
+model TravelSchedule {
+  id        Int     @id @default(autoincrement())
+  time      Int
+  trip      Trip    @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  tripId    Int
+  monday    Boolean @default(false)
+  tuesday   Boolean @default(false)
+  wednesday Boolean @default(false)
+  thursday  Boolean @default(false)
+  friday    Boolean @default(false)
+  saturday  Boolean @default(false)
+  sunday    Boolean @default(false)
 }
