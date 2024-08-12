@@ -33,7 +33,7 @@ export class BusStopSearchDTO {
   page: number = 1;
 
   @IsOptional()
-  order: string;
+  order: string = 'asc';
 
   @IsOptional()
   asc: string = 'asc'
@@ -42,8 +42,14 @@ export class BusStopSearchDTO {
   name: string
   
   @IsOptional()
-  latitude: string
+  latitude_from: string
   
   @IsOptional()
-  longitude: string
+  longitude_from: string
+
+  @IsOptional()
+  latitude_to: string
+  
+  @IsOptional()
+  longitude_to: string
 }

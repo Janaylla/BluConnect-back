@@ -7,24 +7,47 @@ export class BusStopService {
   constructor(private prisma: PrismaService) { }
 
   async createBusStop(data: BusStopDTO) {
+    console.log(data)
     return await this.prisma.busStop.create({ data });
   }
 
-  async listBusStops({ limit, page, search, asc, latitude, longitude, name, order }: BusStopSearchDTO) {
+  async listBusStops({
+    limit, page, search,
+    asc, name, order,
+    latitude_from, longitude_from,
+    latitude_to, longitude_to
+  }: BusStopSearchDTO) {
     const pageSize = limit;
 
     const skip = (page - 1) * pageSize;
+    console.log({
+
+      limit, page, search,
+      asc, name, order,
+      latitude_from, longitude_from,
+      latitude_to, longitude_to
+    })
     const rows = await this.prisma.busStop.findMany({
       orderBy: {
-        [order]: asc,
+        ...(order ? {
+          [order]: asc
+        }: {
+          name: 'asc'
+        })
       },
       where: {
         name: {
           contains: search,
           mode: 'insensitive',
         },
-        ...(latitude ? { latitude: +latitude } : null),
-        ...(longitude ? { longitude: +longitude } : null),
+        longitude: {
+          gte: +longitude_from || -99999999,
+          lte: +longitude_to || 99999999,
+        },
+        latitude: {
+          gte: +latitude_from || -99999999,
+          lte: +latitude_to || 99999999,
+        },
         ...(name ? {
           name: {
             contains: name,

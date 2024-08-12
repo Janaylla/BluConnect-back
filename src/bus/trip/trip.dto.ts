@@ -1,14 +1,14 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 
 export class BusRouteCreateDTO {
   @IsNotEmpty()
   index: number;
 
   @IsNotEmpty()
-  startBusStopId: number;
-
-  @IsNotEmpty()
-  endBusStopId: number;
+  busStopId: number;
+  
+  @IsNumber()
+  timeAvaragePlus: number
 }
 export class TripCreateDTO {
   @IsNotEmpty()
@@ -16,4 +16,27 @@ export class TripCreateDTO {
 
   @IsNotEmpty()
   routes: BusRouteCreateDTO[];
+}
+
+export class TripSearchDTO {
+  @IsString()
+  search: string;
+
+  @IsOptional()
+  @IsNumber()
+  limit: number = 10;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  page: number = 1;
+
+  @IsOptional()
+  order: string;
+
+  @IsOptional()
+  asc: string = 'asc'
+
+  @IsOptional()
+  code: string
 }

@@ -2,8 +2,8 @@ import { IsNotEmpty } from 'class-validator';
 export class BusRouteDTO {
   readonly index: number;
   readonly tripId: number;
-  readonly startBusStopId: number;
-  readonly endBusStopId: number;
+  readonly busStopId: number;
+  readonly averagTimePlus: number;
 }
 
 export class BusRouteCreateDTO {
@@ -14,10 +14,10 @@ export class BusRouteCreateDTO {
   readonly tripId: number;
 
   @IsNotEmpty()
-  readonly startBusStopId: number;
+  readonly busStopId: number;
 
   @IsNotEmpty()
-  readonly endBusStopId: number;
+  readonly averagTimePlus: number;
 }
 
 export class RouteSearchDTO {

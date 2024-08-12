@@ -1,16 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { BusRouteCreateDTO, TripCreateDTO } from './trip.dto';
+import { BusRouteCreateDTO, TripCreateDTO, TripSearchDTO } from './trip.dto';
 import { PrismaService } from 'src/database/PrismaService';
-import { BusStopSearchDTO } from '../busStop/busStop.dto';
 import { BusRouteDTO } from '../busRoute/busRoute.dto';
 @Injectable()
 export class TripService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async createTrip(data: TripCreateDTO) {
     const { code, routes } = data;
+    const averageTime = routes.reduce((a, b) => a + b.timeAvaragePlus, 0)
+    const routesSort = data.routes.sort((a, b) => a.index - b.index);
+
     const trip = await this.prisma.trip.create({
-      data: { code },
+      data: { code, averageTime, startBusStopId: routesSort[0].busStopId, endBusStopId: routesSort[routesSort.length - 1].busStopId },
     });
     await this.createBusRoute(trip.id, routes);
   }
@@ -18,9 +20,9 @@ export class TripService {
     const tripRoutes: BusRouteDTO[] = routes.map((route) => {
       return {
         tripId: tripId,
-        endBusStopId: route.endBusStopId,
-        startBusStopId: route.startBusStopId,
+        busStopId: route.busStopId,
         index: route.index,
+        averagTimePlus: route.timeAvaragePlus
       };
     });
     await this.prisma.busRoute.createMany({
@@ -28,25 +30,30 @@ export class TripService {
     });
   }
 
-  async listTrips({ limit, page, search }: BusStopSearchDTO) {
+  async listTrips({ limit, page, search, asc, code, order }: TripSearchDTO) {
     const pageSize = limit;
 
     const skip = (page - 1) * pageSize;
     const rows = await this.prisma.trip.findMany({
       orderBy: {
-        code: 'asc',
+        [order]: asc,
       },
       where: {
         code: {
           contains: search,
           mode: 'insensitive',
         },
+        ...(code ? {
+          code: {
+            contains: code,
+            mode: 'insensitive',
+          }
+        } : null)
       },
       include: {
         busRoutes: {
           include: {
-            startBusStop: true,
-            endBusStop: true,
+            busStop: true,
           },
         },
       },
@@ -70,9 +77,11 @@ export class TripService {
       include: {
         busRoutes: {
           include: {
-            startBusStop: true,
-            endBusStop: true,
+            busStop: true,
           },
+          orderBy: {
+            index: 'asc'
+          }
         },
       },
     });

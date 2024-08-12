@@ -10,8 +10,12 @@ generator client {
 model Trip {
   id        Int        @id @default(autoincrement())
   code      String     @unique
+  averageTime Int
+  startBusStop   BusStop @relation("StartBusStopRelation", fields: [startBusStopId], references: [id], onDelete: Cascade)
+  startBusStopId Int
+  endBusStop     BusStop @relation("EndBusStopRelation", fields: [endBusStopId], references: [id], onDelete: Cascade)
+  endBusStopId   Int
   busRoutes BusRoute[] @relation("OriginBusRoutes")
-
   TralvelSchedules TravelSchedule[]
 }
 
@@ -20,8 +24,10 @@ model BusStop {
   name           String     @unique
   latitude       Float
   longitude      Float
-  busRoutesStart BusRoute[] @relation("StartBusStop")
-  busRoutesEnd   BusRoute[] @relation("EndBusStop")
+  TripStarts Trip[] @relation("EndBusStopRelation")
+  TripEnds Trip[] @relation("StartBusStopRelation")
+
+  BusRoute BusRoute[] @relation("BusStop")
 }
 
 model BusRoute {
@@ -29,10 +35,9 @@ model BusRoute {
   index          Int
   trip           Trip    @relation("OriginBusRoutes", fields: [tripId], references: [id], onDelete: Cascade)
   tripId         Int
-  startBusStop   BusStop @relation("StartBusStop", fields: [startBusStopId], references: [id], onDelete: Cascade)
-  startBusStopId Int
-  endBusStop     BusStop @relation("EndBusStop", fields: [endBusStopId], references: [id], onDelete: Cascade)
-  endBusStopId   Int
+  busStop   BusStop @relation("BusStop", fields: [busStopId], references: [id], onDelete: Cascade)
+  busStopId Int
+  averagTimePlus Int
 }
 
 model TravelSchedule {

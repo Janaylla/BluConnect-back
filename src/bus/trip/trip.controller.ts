@@ -9,8 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { TripService } from './trip.service';
-import { TripCreateDTO } from './trip.dto';
-import { BusStopSearchDTO } from '../busStop/busStop.dto';
+import { TripCreateDTO, TripSearchDTO } from './trip.dto';
 
 @Controller('trips')
 export class TripController {
@@ -22,7 +21,7 @@ export class TripController {
   }
 
   @Get()
-  async listTrips(@Query() query: BusStopSearchDTO) {
+  async listTrips(@Query() query: TripSearchDTO) {
     return this.tripService.listTrips(query);
   }
 
