@@ -4,25 +4,33 @@ import { PrismaService } from 'src/database/PrismaService';
 
 @Injectable()
 export class BusStopService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async createBusStop(data: BusStopDTO) {
     return await this.prisma.busStop.create({ data });
   }
 
-  async listBusStops({ limit, page, search }: BusStopSearchDTO) {
+  async listBusStops({ limit, page, search, asc, latitude, longitude, name, order }: BusStopSearchDTO) {
     const pageSize = limit;
 
     const skip = (page - 1) * pageSize;
     const rows = await this.prisma.busStop.findMany({
       orderBy: {
-        name: 'asc',
+        [order]: asc,
       },
       where: {
         name: {
           contains: search,
           mode: 'insensitive',
         },
+        ...(latitude ? { latitude: +latitude } : null),
+        ...(longitude ? { longitude: +longitude } : null),
+        ...(name ? {
+          name: {
+            contains: name,
+            mode: 'insensitive',
+          }
+        } : null),
       },
       take: +pageSize,
       skip,

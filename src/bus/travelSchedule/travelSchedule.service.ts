@@ -4,27 +4,69 @@ import { TravelScheduleDTO, TravelScheduleSearchDTO } from './travelSchedule.dto
 
 @Injectable()
 export class TravelScheduleService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async createTravelSchedule(data: TravelScheduleDTO) {
     return await this.prisma.travelSchedule.create({ data });
   }
 
-  async listTravelSchedules({ limit, page }: TravelScheduleSearchDTO) {
+  async listTravelSchedules({
+    limit, page,
+    time_from,
+    time_to,
+    asc,
+    'trip.code': trip_code,
+    order,
+    friday, monday, saturday, sunday,
+    thursday, tuesday, wednesday }: TravelScheduleSearchDTO) {
     const pageSize = limit;
 
     const skip = (page - 1) * pageSize;
+
+    const orders = order.split('.');
+    const orderBy = {};
+    let currentLevel = orderBy;
+
+    for (let i = 0; i < orders.length; i++) {
+      const key = orders[i];
+      if (i === orders.length - 1) {
+        currentLevel[key] = asc;
+      } else {
+        currentLevel[key] = {};
+        currentLevel = currentLevel[key];
+      }
+    }
+    console.log('orderBy', orderBy)
     const rows = await this.prisma.travelSchedule.findMany({
-      orderBy: {
-        time: 'asc',
-      },
+      orderBy,
       take: +pageSize,
       skip,
       include: {
         trip: {
-          
+
         }
-      }
+      },
+      where: {
+        ...(friday === 'true' ? { friday: true } : null),
+        ...(monday === 'true' ? { monday: true } : null),
+        ...(saturday === 'true' ? { saturday: true } : null),
+        ...(sunday === 'true' ? { sunday: true } : null),
+        ...(thursday === 'true' ? { thursday: true } : null),
+        ...(tuesday === 'true' ? { tuesday: true } : null),
+        ...(wednesday === 'true' ? { wednesday: true } : null),
+        time: {
+          gte: +time_from || 0,
+          lte: +time_to || 99999999,
+        },
+        ...(trip_code ? {
+          trip: {
+            code: {
+              contains: trip_code,
+              mode: 'insensitive',
+            }
+          }
+        } : null)
+      },
     });
     const count = await this.prisma.travelSchedule.count();
     return { rows, count };

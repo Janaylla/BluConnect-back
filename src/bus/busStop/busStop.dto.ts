@@ -31,4 +31,19 @@ export class BusStopSearchDTO {
   @IsNumber()
   @Min(1)
   page: number = 1;
+
+  @IsOptional()
+  order: string;
+
+  @IsOptional()
+  asc: string = 'asc'
+
+  @IsOptional()
+  name: string
+  
+  @IsOptional()
+  latitude: string
+  
+  @IsOptional()
+  longitude: string
 }

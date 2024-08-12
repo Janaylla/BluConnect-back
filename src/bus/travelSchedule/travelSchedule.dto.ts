@@ -53,5 +53,43 @@ import {
     @IsNumber()
     @Min(1)
     page: number = 1;
+
+    @IsOptional()
+    order: string = '';
+
+    @IsOptional()
+    asc: string = '';
+
+    @IsNumber()
+    @IsOptional()
+    time_from: number;
+
+    @IsOptional()
+    time_to: number;
+  
+    @IsOptional()
+    monday?: string;
+  
+    @IsOptional()
+    tuesday?: string;
+  
+    @IsOptional()
+    wednesday?: string;
+  
+    @IsOptional()
+    thursday?: string;
+  
+    @IsOptional()
+    friday?: string;
+  
+    @IsOptional()
+    saturday?: string;
+  
+    @IsOptional()
+    sunday?: string;
+  
+    @IsOptional()
+    'trip.code': string;
+
   }
   

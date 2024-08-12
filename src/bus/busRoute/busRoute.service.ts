@@ -16,7 +16,7 @@ export class BusRouteService {
       where: { OR: [{ startBusStopId: +from_id }, { endBusStopId: +from_id }] },
     });
     const from = await this.prisma.busRoute.findFirstOrThrow({
-      where: { OR: [{ startBusStopId: +to_id }, { endBusStopId: +to_id }] },
+      where: { OR: [{ startBusStopId: +to_id }, { endBusStopId: +to_id }], tripId: to.tripId },
     });
     const max = to.index > from.index ? to.index : from.index;
     const min = to.index < from.index ? to.index : from.index;
@@ -27,6 +27,7 @@ export class BusRouteService {
           gte: min,
           lte: max,
         },
+        tripId: to.tripId 
       },
       orderBy: {
         index: 'asc', // Ordena as rotas pelo índice
