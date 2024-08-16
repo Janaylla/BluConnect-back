@@ -2,17 +2,33 @@ import { Injectable } from '@nestjs/common';
 import { BusRouteCreateDTO, TripCreateDTO, TripSearchDTO } from './trip.dto';
 import { PrismaService } from 'src/database/PrismaService';
 import { BusRouteDTO } from '../busRoute/busRoute.dto';
+
 @Injectable()
 export class TripService {
   constructor(private prisma: PrismaService) { }
 
   async createTrip(data: TripCreateDTO) {
     const { code, routes } = data;
-    const averageTime = routes.reduce((a, b) => a + b.timeAvaragePlus, 0)
+    const averageTime = routes.reduce((a, b) => a + b.averageTimePlus, 0)
     const routesSort = data.routes.sort((a, b) => a.index - b.index);
-
+    const startBusStopId = routesSort[0].busStopId
+    const endBusStopId = routesSort[routesSort.length - 1].busStopId
     const trip = await this.prisma.trip.create({
-      data: { code, averageTime, startBusStopId: routesSort[0].busStopId, endBusStopId: routesSort[routesSort.length - 1].busStopId },
+      data: {
+        code,
+        averageTime: Number(averageTime),
+        numberStops: +routesSort.length,
+        startBusStop: {
+          connect: {
+            id: startBusStopId,
+          }
+        },
+        endBusStop: {
+          connect: {
+            id: endBusStopId,
+          },
+        },
+      },
     });
     await this.createBusRoute(trip.id, routes);
   }
@@ -22,7 +38,7 @@ export class TripService {
         tripId: tripId,
         busStopId: route.busStopId,
         index: route.index,
-        averagTimePlus: route.timeAvaragePlus
+        averageTimePlus: route.averageTimePlus
       };
     });
     await this.prisma.busRoute.createMany({
@@ -30,13 +46,27 @@ export class TripService {
     });
   }
 
-  async listTrips({ limit, page, search, asc, code, order }: TripSearchDTO) {
+  async listTrips({
+    limit, page, search,
+    asc, code, order,
+    "startBusStop.name": startName, "endBusStop.name": endName,
+    numberStops_from, numberStops_to,
+  }: TripSearchDTO) {
+    console.log({
+
+      limit, page, search,
+      asc, code, order,
+      "startBusStop.name": startName, "endBusStop.name": endName,
+      numberStops_from, numberStops_to,
+    })
     const pageSize = limit;
 
     const skip = (page - 1) * pageSize;
     const rows = await this.prisma.trip.findMany({
-      orderBy: {
-        [order]: asc,
+      orderBy: order ? {
+        [order]: asc
+      } : {
+        code: 'asc'
       },
       where: {
         code: {
@@ -48,14 +78,31 @@ export class TripService {
             contains: code,
             mode: 'insensitive',
           }
-        } : null)
+        } : null),
+        ...(startName ? {
+          startBusStop: {
+            name: {
+              contains: startName,
+              mode: 'insensitive',
+            },
+          }
+        } : null),
+        ...(endName ? {
+          endBusStop: {
+            name: {
+              contains: endName,
+              mode: 'insensitive',
+            }
+          }
+        } : null),
+        numberStops: {
+          gte: +numberStops_from || -99999999,
+          lte: +numberStops_to || 99999999,
+        },
       },
       include: {
-        busRoutes: {
-          include: {
-            busStop: true,
-          },
-        },
+        startBusStop: true,
+        endBusStop: true,
       },
       take: +pageSize,
       skip,

@@ -3,7 +3,7 @@ export class BusRouteDTO {
   readonly index: number;
   readonly tripId: number;
   readonly busStopId: number;
-  readonly averagTimePlus: number;
+  readonly averageTimePlus: number;
 }
 
 export class BusRouteCreateDTO {
@@ -17,7 +17,7 @@ export class BusRouteCreateDTO {
   readonly busStopId: number;
 
   @IsNotEmpty()
-  readonly averagTimePlus: number;
+  readonly averageTimePlus: number;
 }
 
 export class RouteSearchDTO {

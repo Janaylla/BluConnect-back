@@ -11,11 +11,12 @@ model Trip {
   id        Int        @id @default(autoincrement())
   code      String     @unique
   averageTime Int
-  startBusStop   BusStop @relation("StartBusStopRelation", fields: [startBusStopId], references: [id], onDelete: Cascade)
+  numberStops Int
   startBusStopId Int
-  endBusStop     BusStop @relation("EndBusStopRelation", fields: [endBusStopId], references: [id], onDelete: Cascade)
   endBusStopId   Int
   busRoutes BusRoute[] @relation("OriginBusRoutes")
+  startBusStop     BusStop          @relation("StartBusStopRelation", fields: [startBusStopId], references: [id], onDelete: Cascade)
+  endBusStop       BusStop          @relation("EndBusStopRelation", fields: [endBusStopId], references: [id], onDelete: Cascade)
   TralvelSchedules TravelSchedule[]
 }
 
@@ -37,7 +38,7 @@ model BusRoute {
   tripId         Int
   busStop   BusStop @relation("BusStop", fields: [busStopId], references: [id], onDelete: Cascade)
   busStopId Int
-  averagTimePlus Int
+  averageTimePlus Int
 }
 
 model TravelSchedule {

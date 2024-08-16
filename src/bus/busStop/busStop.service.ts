@@ -20,13 +20,6 @@ export class BusStopService {
     const pageSize = limit;
 
     const skip = (page - 1) * pageSize;
-    console.log({
-
-      limit, page, search,
-      asc, name, order,
-      latitude_from, longitude_from,
-      latitude_to, longitude_to
-    })
     const rows = await this.prisma.busStop.findMany({
       orderBy: {
         ...(order ? {

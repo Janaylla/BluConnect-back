@@ -55,7 +55,7 @@ import {
     page: number = 1;
 
     @IsOptional()
-    order: string = '';
+    order: string = 'code';
 
     @IsOptional()
     asc: string = '';

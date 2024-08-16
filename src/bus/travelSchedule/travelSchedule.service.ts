@@ -36,7 +36,6 @@ export class TravelScheduleService {
         currentLevel = currentLevel[key];
       }
     }
-    console.log('orderBy', orderBy)
     const rows = await this.prisma.travelSchedule.findMany({
       orderBy,
       take: +pageSize,

@@ -8,7 +8,7 @@ export class BusRouteCreateDTO {
   busStopId: number;
   
   @IsNumber()
-  timeAvaragePlus: number
+  averageTimePlus: number
 }
 export class TripCreateDTO {
   @IsNotEmpty()
@@ -32,11 +32,23 @@ export class TripSearchDTO {
   page: number = 1;
 
   @IsOptional()
-  order: string;
+  order: string = 'code';
 
   @IsOptional()
   asc: string = 'asc'
 
   @IsOptional()
   code: string
+
+  @IsOptional()
+  numberStops_to: string;
+
+  @IsOptional()
+  numberStops_from: string;
+  
+  @IsOptional()
+  'startBusStop.name': string
+
+  @IsOptional()
+  'endBusStop.name': string
 }

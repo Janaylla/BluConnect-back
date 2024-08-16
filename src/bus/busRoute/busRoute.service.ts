@@ -17,20 +17,27 @@ export class BusRouteService {
       where: { busStopId: +from_id },
     });
 
-    const from = await this.prisma.busRoute.findFirstOrThrow({
+    const from = await this.prisma.busRoute.findFirst({
       where: {
         OR: toPossibily.map((b => ({
-          tripId: b.tripId
+          tripId: b.tripId,
+          busStop: {
+            id: +to_id
+          },
+          index: {
+            gt: b.index,
+          }
         })))
       },
     });
+    if (!from) return []
     const to = await this.prisma.busRoute.findFirst({
       where: {
         tripId: from.tripId,
         busStopId: +from_id
       },
     });
-
+    if (!to) return []
     const max = to.index > from.index ? to.index : from.index;
     const min = to.index < from.index ? to.index : from.index;
     // Consulta as rotas com base nas paradas de ônibus de origem e destino

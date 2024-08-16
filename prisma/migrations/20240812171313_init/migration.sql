@@ -3,6 +3,7 @@ CREATE TABLE "Trip" (
     "id" SERIAL NOT NULL,
     "code" TEXT NOT NULL,
     "averageTime" INTEGER NOT NULL,
+    "numberStops" INTEGER NOT NULL,
     "startBusStopId" INTEGER NOT NULL,
     "endBusStopId" INTEGER NOT NULL,
 
@@ -25,7 +26,7 @@ CREATE TABLE "BusRoute" (
     "index" INTEGER NOT NULL,
     "tripId" INTEGER NOT NULL,
     "busStopId" INTEGER NOT NULL,
-    "averagTimePlus" INTEGER NOT NULL,
+    "averageTimePlus" INTEGER NOT NULL,
 
     CONSTRAINT "BusRoute_pkey" PRIMARY KEY ("id")
 );
