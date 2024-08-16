@@ -52,20 +52,25 @@ export class TripService {
     "startBusStop.name": startName, "endBusStop.name": endName,
     numberStops_from, numberStops_to,
   }: TripSearchDTO) {
-    console.log({
-
-      limit, page, search,
-      asc, code, order,
-      "startBusStop.name": startName, "endBusStop.name": endName,
-      numberStops_from, numberStops_to,
-    })
     const pageSize = limit;
+    
+    const orders = order.split('.');
+    const orderBy = {};
+    let currentLevel = orderBy;
+
+    for (let i = 0; i < orders.length; i++) {
+      const key = orders[i];
+      if (i === orders.length - 1) {
+        currentLevel[key] = asc;
+      } else {
+        currentLevel[key] = {};
+        currentLevel = currentLevel[key];
+      }
+    }
 
     const skip = (page - 1) * pageSize;
     const rows = await this.prisma.trip.findMany({
-      orderBy: order ? {
-        [order]: asc
-      } : {
+      orderBy: order ? orderBy : {
         code: 'asc'
       },
       where: {
