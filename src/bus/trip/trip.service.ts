@@ -6,18 +6,26 @@ import { BusRouteDTO } from '../busRoute/busRoute.dto';
 @Injectable()
 export class TripService {
   constructor(private prisma: PrismaService) { }
-
-  async createTrip(data: TripCreateDTO) {
-    const { code, routes } = data;
+  private getTripDetails(routes: BusRouteCreateDTO[]) {
     const averageTime = routes.reduce((a, b) => a + b.averageTimePlus, 0)
-    const routesSort = data.routes.sort((a, b) => a.index - b.index);
+    const routesSort = routes.sort((a, b) => a.index - b.index);
     const startBusStopId = routesSort[0].busStopId
     const endBusStopId = routesSort[routesSort.length - 1].busStopId
+    return {
+      averageTime,
+      startBusStopId,
+      endBusStopId,
+      numberStops: routes.length
+    }
+  }
+  async createTrip(data: TripCreateDTO) {
+    const { code, routes } = data;
+    const { averageTime, endBusStopId, startBusStopId, numberStops } = this.getTripDetails(routes)
     const trip = await this.prisma.trip.create({
       data: {
         code,
-        averageTime: Number(averageTime),
-        numberStops: +routesSort.length,
+        averageTime,
+        numberStops,
         startBusStop: {
           connect: {
             id: startBusStopId,
@@ -53,7 +61,7 @@ export class TripService {
     numberStops_from, numberStops_to,
   }: TripSearchDTO) {
     const pageSize = limit;
-    
+
     const orders = order.split('.');
     const orderBy = {};
     let currentLevel = orderBy;
@@ -140,7 +148,12 @@ export class TripService {
   }
 
   async updateTrip(id: number, data: TripCreateDTO) {
-    await this.prisma.trip.update({ where: { id }, data: { code: data.code } });
+    const { code, routes } = data;
+    const { averageTime, endBusStopId, startBusStopId, numberStops } = this.getTripDetails(routes)
+    await this.prisma.trip.update({
+      where: { id },
+      data: { code, averageTime, endBusStopId, startBusStopId, numberStops }
+    });
     await this.prisma.busRoute.deleteMany({ where: { tripId: id } });
     await this.createBusRoute(id, data.routes);
   }
