@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BusStopDTO, BusStopSearchDTO } from './busStop.dto';
-import { PrismaService } from 'src/database/PrismaService';
+import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
 export class BusStopService {

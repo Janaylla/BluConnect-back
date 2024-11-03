@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/database/PrismaService';
 import { TravelScheduleDTO, TravelScheduleSearchDTO } from './travelSchedule.dto';
+import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
 export class TravelScheduleService {
