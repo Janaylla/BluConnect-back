@@ -17,22 +17,6 @@ export class UpdateUser {
   @IsOptional()
   active?: boolean = true;
 }
-
-export class CreateUserDto {
-  @IsEmail({}, { message: 'O e-mail deve ser um endereço de e-mail válido' })
-  email: string;
-
-  @IsString({ message: 'O nome deve ser uma string' })
-  name: string;
-
-  @IsString({ message: 'A senha deve ser uma string' })
-  @MinLength(6, { message: 'A senha deve ter no mínimo 6 caracteres' })
-  hashedPassword: string;
-
-  @IsOptional()
-  active?: boolean = true;
-}
-
 export class UserDto {
   @IsEmail({}, { message: 'O e-mail deve ser um endereço de e-mail válido' })
   email: string;

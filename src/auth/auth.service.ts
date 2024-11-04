@@ -4,7 +4,7 @@ import { User } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 import { LoginDto } from './auth.dto';
 import { UserService } from '../user/user.service';
-import { CreateUserDto, UserDto } from '../user/user.dto';
+import { UserDto } from 'src/user/user.dto';
 
 @Injectable()
 export class AuthService {
@@ -16,19 +16,12 @@ export class AuthService {
   async onModuleInit() {
     await this.createInitialUser();
   }
-  async createUser(createUserDto: UserDto) {
-    const createUserDtoHashed = {
-      ...createUserDto,
-      hashedPassword: await this.hashPassword(createUserDto.password),
-    };
-    await this.userService.createUser(createUserDtoHashed);
-  }
   async createInitialUser() {
     const password = process.env.ADMIN_PASSWORD;
-    const admin: CreateUserDto = {
+    const admin: UserDto = {
       email: process.env.ADMIN_EMAIL,
       name: process.env.ADMIN_NAME,
-      hashedPassword: await this.hashPassword(password),
+      password,
       active: true,
     };
     const userExists = await this.userService.findUserByEmail(admin.email);
@@ -38,11 +31,6 @@ export class AuthService {
     } else {
       console.log('Usuário inicial já existe');
     }
-  }
-
-  private async hashPassword(password: string) {
-    const salt = await bcrypt.genSalt();
-    return bcrypt.hash(password, salt);
   }
   async findUserByEmail(email: string): Promise<User | null> {
     try {

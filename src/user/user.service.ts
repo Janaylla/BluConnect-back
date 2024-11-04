@@ -1,18 +1,19 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
-import { CreateUserDto, UpdateUser, UserSearchDTO } from './user.dto';
+import { UpdateUser, UserDto, UserSearchDTO } from './user.dto';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createUser(createUserDto: CreateUserDto) {
+  async createUser(createUserDto: UserDto) {
     await this.prisma.user.create({
       data: {
         email: createUserDto.email,
         name: createUserDto.name, // Incluindo o nome
-        password: createUserDto.hashedPassword,
+        password: await this.hashPassword(createUserDto.password),
         active: createUserDto.active ?? true, // Definindo 'active' como true por padrão
       },
     });
@@ -35,7 +36,7 @@ export class UserService {
       throw new Error('Você não pode inativar a si mesmo.');
     }
     await this.prisma.user.update({
-      where: { id },
+      where: { id: +id },
       data: {
         active: false,
       },
@@ -46,39 +47,38 @@ export class UserService {
       throw new Error('Você não pode editar a si mesmo.');
     }
     await this.prisma.user.update({
-      where: { id },
+      where: { id: +id },
       data,
     });
   }
+  private async hashPassword(password: string) {
+    const salt = await bcrypt.genSalt();
+    return bcrypt.hash(password, salt);
+  }
   async listUsers(
     requesterId: number,
-    { asc, email, limit, name, order, page }: UserSearchDTO,
+    { asc, limit, order, page }: UserSearchDTO,
   ) {
-    return await this.prisma.user.findMany({
+    const rows = await this.prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        active: true,
+      },
       where: {
-        id: { not: requesterId },
-        ...(name
-          ? {
-              name: {
-                contains: name,
-                mode: 'insensitive',
-              },
-            }
-          : null),
-        ...(email
-          ? {
-              email: {
-                contains: email,
-                mode: 'insensitive',
-              },
-            }
-          : null),
+        active: true,
+        id: {
+          not: +requesterId,
+        },
       },
       orderBy: {
         [order]: asc,
       },
-      take: limit,
-      skip: (page - 1) * limit,
+      take: +limit,
+      skip: (page - 1) * +limit,
     });
+    const count = await this.prisma.log.count();
+    return { rows, count };
   }
 }

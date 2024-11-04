@@ -4,6 +4,7 @@ import { BusModule } from './bus/bus.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { PasswordRecoveryModule } from './auth/passwordRecovery/passwordRecovery.module';
 import { AuthModule } from './auth/auth.module';
+import { LogModule } from './log/log.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AuthModule } from './auth/auth.module';
     PasswordRecoveryModule,
     AuthModule,
     AppModule,
+    LogModule,
   ],
   controllers: [],
   providers: [],

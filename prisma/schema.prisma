@@ -78,7 +78,7 @@ model Log {
   userId    Int
   success   Boolean?
   loading   Boolean
-  User      User       @relation("UserLog", fields: [userId], references: [id], onDelete: Cascade)
+  user      User       @relation("UserLog", fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
@@ -89,5 +89,5 @@ model User {
   resetPasswordCode String?
   resetCodeExpires  DateTime?
   active            Boolean
-  Log               Log[]     @relation("UserLog")
+  log               Log[]     @relation("UserLog")
 }

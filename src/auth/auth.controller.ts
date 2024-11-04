@@ -12,11 +12,6 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
-  @Post('user')
-  async createUser(@Body() createUserDto) {
-    return this.authService.createUser(createUserDto);
-  }
-
   @UseGuards(AuthGuard('jwt'))
   @Post('profile')
   getProfile(@Request() req) {

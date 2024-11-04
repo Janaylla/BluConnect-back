@@ -7,23 +7,37 @@ import {
   Query,
   UseGuards,
   Request,
+  UseInterceptors,
+  Delete,
+  Post,
 } from '@nestjs/common';
-import { UserService } from './user.service'; // Ajuste o caminho conforme a estrutura do seu projeto
-import { UpdateUser, UserSearchDTO } from './user.dto'; // Ajuste o caminho conforme a estrutura do seu projeto
+import { UserService } from './user.service';
+import { UpdateUser, UserSearchDTO } from './user.dto';
 import { JwtAuthGuard } from 'src/auth/guard/jwtAuthGuard';
+import { LoggingInterceptor } from 'src/common/interceptor/logger.interceptor';
 
-@Controller('users')
-@UseGuards(JwtAuthGuard) // Protegendo as rotas com o guard de autenticação JWT
+@Controller('user')
+@UseGuards(JwtAuthGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Put(':id/inactivate')
+  @Post('')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(LoggingInterceptor)
+  async createUser(@Body() createUserDto) {
+    return this.userService.createUser(createUserDto);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(LoggingInterceptor)
   async inactiveUser(@Param('id') id: number, @Request() req) {
     const requesterId = req.user.id; // Supondo que o ID do usuário autenticado esteja em req.user
     return this.userService.inactiveUser(requesterId, id);
   }
 
   @Put(':id')
+  @UseInterceptors(LoggingInterceptor)
   async updateUser(
     @Param('id') id: number,
     @Body() data: UpdateUser,
