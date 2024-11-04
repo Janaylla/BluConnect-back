@@ -1,24 +1,34 @@
 import { Injectable } from '@nestjs/common';
-import { TravelScheduleDTO, TravelScheduleSearchDTO } from './travelSchedule.dto';
+import {
+  TravelScheduleDTO,
+  TravelScheduleSearchDTO,
+} from './travelSchedule.dto';
 import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
 export class TravelScheduleService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   async createTravelSchedule(data: TravelScheduleDTO) {
     return await this.prisma.travelSchedule.create({ data });
   }
 
   async listTravelSchedules({
-    limit, page,
+    limit,
+    page,
     time_from,
     time_to,
     asc,
     'trip.code': trip_code,
     order,
-    friday, monday, saturday, sunday,
-    thursday, tuesday, wednesday }: TravelScheduleSearchDTO) {
+    friday,
+    monday,
+    saturday,
+    sunday,
+    thursday,
+    tuesday,
+    wednesday,
+  }: TravelScheduleSearchDTO) {
     const pageSize = limit;
 
     const skip = (page - 1) * pageSize;
@@ -41,9 +51,7 @@ export class TravelScheduleService {
       take: +pageSize,
       skip,
       include: {
-        trip: {
-
-        }
+        trip: {},
       },
       where: {
         ...(friday === 'true' ? { friday: true } : null),
@@ -57,14 +65,16 @@ export class TravelScheduleService {
           gte: +time_from || 0,
           lte: +time_to || 99999999,
         },
-        ...(trip_code ? {
-          trip: {
-            code: {
-              contains: trip_code,
-              mode: 'insensitive',
+        ...(trip_code
+          ? {
+              trip: {
+                code: {
+                  contains: trip_code,
+                  mode: 'insensitive',
+                },
+              },
             }
-          }
-        } : null)
+          : null),
       },
     });
     const count = await this.prisma.travelSchedule.count();

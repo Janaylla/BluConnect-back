@@ -1,60 +1,66 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import * as nodemailer from 'nodemailer';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { PrismaService } from 'prisma/prisma.service';
-
+import { CodeVerificationDto, ResetPasswordDto } from './passwordRecovery.dto';
+import { MailService } from 'src/mail/mail.service';
+import { User } from '@prisma/client';
 @Injectable()
 export class PasswordRecoveryService {
   constructor(
-    private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
+    private readonly mailService: MailService,
   ) {}
 
   async sendRecoveryEmail(email: string) {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) throw new NotFoundException('Usuário não encontrado');
 
-    const token = this.jwtService.sign({ userId: user.id }, { expiresIn: '5m' });
-    const tokenExpires = new Date();
-    tokenExpires.setMinutes(tokenExpires.getMinutes() + 5);
+    // Gerar um código de recuperação aleatório
+    const recoveryCode = Math.floor(100000 + Math.random() * 900000).toString(); // Código de 6 dígitos
+
+    const codeExpires = new Date();
+    codeExpires.setMinutes(codeExpires.getMinutes() + 5); // O código expira em 5 minutos
+
+    await this.mailService.sendEmail({
+      context: { code: recoveryCode, name: user.name },
+      to: user.email,
+      type: 'passwordRecovery',
+    });
 
     await this.prisma.user.update({
       where: { email },
       data: {
-        resetPasswordToken: token,
-        resetTokenExpires: tokenExpires,
+        resetPasswordCode: recoveryCode,
+        resetCodeExpires: codeExpires,
       },
     });
-
-    const transporter = nodemailer.createTransport({
-      service: 'Gmail', // ou outro provedor de e-mail
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: 'Recuperação de Senha',
-      text: `Use o seguinte token para redefinir sua senha: ${token}`,
-    };
-
-    await transporter.sendMail(mailOptions);
   }
-
-  async resetPassword(token: string, newPassword: string) {
-    const payload = this.jwtService.verify(token);
-
-    const user = await this.prisma.user.findUnique({
-      where: { id: payload.userId },
-    });
-
-    if (!user || user.resetPasswordToken !== token || new Date() > user.resetTokenExpires) {
-      throw new UnauthorizedException('Token inválido ou expirado');
+  getUserByEmail = async (email: string) => {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) throw new NotFoundException('Usuário não encontrado');
+    return user;
+  };
+  async codigoIsValid(user: User, resetCode: string) {
+    if (
+      user.resetPasswordCode !== resetCode ||
+      new Date() > user.resetCodeExpires
+    ) {
+      throw new UnauthorizedException('Código inválido ou expirado');
     }
+    return true;
+  }
+  async confirmCode(body: CodeVerificationDto) {
+    const user = await this.getUserByEmail(body.email);
+    await this.codigoIsValid(user, body.resetCode);
+    return true;
+  }
+  async resetPassword({ email, newPassword, resetCode }: ResetPasswordDto) {
+    const user = await this.getUserByEmail(email);
+    await this.codigoIsValid(user, resetCode);
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
@@ -62,9 +68,14 @@ export class PasswordRecoveryService {
       where: { id: user.id },
       data: {
         password: hashedPassword,
-        resetPasswordToken: null,
-        resetTokenExpires: null,
+        resetPasswordCode: null,
+        resetCodeExpires: null,
       },
+    });
+    await this.mailService.sendEmail({
+      context: { name: user.name },
+      to: user.email,
+      type: 'passwordChanged',
     });
   }
 }

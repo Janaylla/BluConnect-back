@@ -4,7 +4,7 @@ import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
 export class BusRouteService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   async createBusRoute(data: BusRouteDTO) {
     return await this.prisma.busRoute.create({ data });
@@ -19,25 +19,25 @@ export class BusRouteService {
 
     const from = await this.prisma.busRoute.findFirst({
       where: {
-        OR: toPossibily.map((b => ({
+        OR: toPossibily.map((b) => ({
           tripId: b.tripId,
           busStop: {
-            id: +to_id
+            id: +to_id,
           },
           index: {
             gt: b.index,
-          }
-        })))
+          },
+        })),
       },
     });
-    if (!from) return []
+    if (!from) return [];
     const to = await this.prisma.busRoute.findFirst({
       where: {
         tripId: from.tripId,
-        busStopId: +from_id
+        busStopId: +from_id,
       },
     });
-    if (!to) return []
+    if (!to) return [];
     const max = to.index > from.index ? to.index : from.index;
     const min = to.index < from.index ? to.index : from.index;
     // Consulta as rotas com base nas paradas de ônibus de origem e destino
@@ -47,7 +47,7 @@ export class BusRouteService {
           gte: min,
           lte: max,
         },
-        tripId: to.tripId
+        tripId: to.tripId,
       },
       orderBy: {
         index: 'asc', // Ordena as rotas pelo índice

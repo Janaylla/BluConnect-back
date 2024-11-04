@@ -7,11 +7,17 @@ import {
   Put,
   Delete,
   Query,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { TripService } from './trip.service';
 import { TripCreateDTO, TripSearchDTO } from './trip.dto';
+import { JwtAuthGuard } from 'src/auth/guard/jwtAuthGuard';
+import { LoggingInterceptor } from 'src/common/interceptor/logger.interceptor';
 
 @Controller('trips')
+@UseGuards(JwtAuthGuard)
+@UseInterceptors(LoggingInterceptor)
 export class TripController {
   constructor(private tripService: TripService) {}
 

@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "HTTPMethod" AS ENUM ('GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD');
+
 -- CreateTable
 CREATE TABLE "Trip" (
     "id" SERIAL NOT NULL,
@@ -47,11 +50,45 @@ CREATE TABLE "TravelSchedule" (
     CONSTRAINT "TravelSchedule_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Log" (
+    "id" SERIAL NOT NULL,
+    "action" TEXT NOT NULL,
+    "method" "HTTPMethod" NOT NULL,
+    "body" TEXT,
+    "query" TEXT,
+    "params" TEXT,
+    "url" TEXT NOT NULL,
+    "model" TEXT NOT NULL,
+    "timestamp" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "userId" INTEGER NOT NULL,
+    "success" BOOLEAN,
+    "loading" BOOLEAN NOT NULL,
+
+    CONSTRAINT "Log_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "User" (
+    "id" SERIAL NOT NULL,
+    "email" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "resetPasswordCode" TEXT,
+    "resetCodeExpires" TIMESTAMP(3),
+    "active" BOOLEAN NOT NULL,
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Trip_code_key" ON "Trip"("code");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "BusStop_name_key" ON "BusStop"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- AddForeignKey
 ALTER TABLE "Trip" ADD CONSTRAINT "Trip_startBusStopId_fkey" FOREIGN KEY ("startBusStopId") REFERENCES "BusStop"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -67,3 +104,6 @@ ALTER TABLE "BusRoute" ADD CONSTRAINT "BusRoute_busStopId_fkey" FOREIGN KEY ("bu
 
 -- AddForeignKey
 ALTER TABLE "TravelSchedule" ADD CONSTRAINT "TravelSchedule_tripId_fkey" FOREIGN KEY ("tripId") REFERENCES "Trip"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Log" ADD CONSTRAINT "Log_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

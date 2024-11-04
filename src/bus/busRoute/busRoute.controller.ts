@@ -7,11 +7,17 @@ import {
   Put,
   Delete,
   Query,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { BusRouteService } from './busRoute.service';
 import { BusRouteDTO, RouteSearchDTO } from './busRoute.dto';
+import { JwtAuthGuard } from 'src/auth/guard/jwtAuthGuard';
+import { LoggingInterceptor } from 'src/common/interceptor/logger.interceptor';
 
 @Controller('bus-routes')
+@UseGuards(JwtAuthGuard)
+@UseInterceptors(LoggingInterceptor)
 export class BusRouteController {
   constructor(private busRouteService: BusRouteService) {}
 

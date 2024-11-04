@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { BusModule } from './bus/bus.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { PasswordRecoveryModule } from './auth/passwordRecovery/passwordRecovery.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { PasswordRecoveryModule } from './auth/passwordRecovery/passwordRecovery
     }),
     BusModule,
     PasswordRecoveryModule,
+    AuthModule,
     AppModule,
   ],
   controllers: [],
