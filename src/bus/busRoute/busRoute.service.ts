@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { BusRouteDTO, RouteSearchDTO } from './busRoute.dto';
+import {
+  BusRouteDTO,
+  RouteSearchDTO,
+  RoutesFromCoordinateshDTO,
+} from './busRoute.dto';
 import { PrismaService } from 'prisma/prisma.service';
+import { BusRoute } from '@prisma/client';
 
 @Injectable()
 export class BusRouteService {
@@ -10,7 +15,45 @@ export class BusRouteService {
     return await this.prisma.busRoute.create({ data });
   }
 
-  async listRoutesPossibleRoutes(query: RouteSearchDTO) {
+  // Encontrar a parada mais próxima do ponto de um ponto
+  private async findNearestStop(latitude: number, longitude: number) {
+    const nearestToStop: {
+      id: number;
+      latitude: number;
+      longitude: number;
+      name: string;
+    }[] = await this.prisma.$queryRawUnsafe(`
+      SELECT id, latitude, longitude, name,
+             (6371 * ACOS(COS(RADIANS(${latitude})) * COS(RADIANS(latitude)) * COS(RADIANS(longitude) - RADIANS(${longitude})) + SIN(RADIANS(${latitude})) * SIN(RADIANS(latitude)))) AS distance
+      FROM "BusStop"
+      ORDER BY distance ASC
+      LIMIT 1;
+    `);
+    return nearestToStop[0];
+  }
+
+  async listRoutesFromCoordinates({
+    from_latitude,
+    from_longitude,
+    to_latitude,
+    to_longitude,
+  }: RoutesFromCoordinateshDTO): Promise<BusRoute[]> {
+    // Passo 1: Encontrar a parada mais próxima do ponto de origem (from)
+    const nearestFromStop = await this.findNearestStop(
+      from_latitude,
+      from_longitude,
+    );
+    const nearestToStop = await this.findNearestStop(to_latitude, to_longitude);
+
+    if (!nearestFromStop || !nearestToStop) {
+      return []; // Retorna vazio se não encontrar paradas próximas
+    }
+    return await this.listRoutesPossibleRoutes({
+      from_id: nearestFromStop.id,
+      to_id: nearestToStop.id,
+    });
+  }
+  async listRoutesPossibleRoutes(query: RouteSearchDTO): Promise<BusRoute[]> {
     const { from_id, to_id } = query;
 
     const toPossibily = await this.prisma.busRoute.findMany({

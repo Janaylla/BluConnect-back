@@ -21,7 +21,9 @@ export class LoggingInterceptor implements NestInterceptor {
     const request = context.switchToHttp().getRequest();
     const user = request.user; // Presume que o usuário já foi autenticado
     const userId = user ? user.id : null;
+    request.url = request.url.split('?')[0];
     const modelKey = request.url.split('/')[1];
+    console.log(modelKey);
     const model = pathToModel[modelKey];
     // Cria o log inicial sem o status de sucesso
     const log = await this.prisma.log.create({

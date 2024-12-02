@@ -20,6 +20,20 @@ export class BusRouteCreateDTO {
   readonly averageTimePlus: number;
 }
 
+export class RoutesFromCoordinateshDTO {
+  @IsNotEmpty()
+  from_longitude: number;
+
+  @IsNotEmpty()
+  from_latitude: number;
+
+  @IsNotEmpty()
+  to_longitude: number;
+
+  @IsNotEmpty()
+  to_latitude: number;
+}
+
 export class RouteSearchDTO {
   @IsNotEmpty()
   from_id: number;

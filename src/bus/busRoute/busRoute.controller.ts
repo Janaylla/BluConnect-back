@@ -11,46 +11,53 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { BusRouteService } from './busRoute.service';
-import { BusRouteDTO, RouteSearchDTO } from './busRoute.dto';
+import {
+  BusRouteDTO,
+  RouteSearchDTO,
+  RoutesFromCoordinateshDTO,
+} from './busRoute.dto';
 import { JwtAuthGuard } from 'src/auth/guard/jwtAuthGuard';
 import { LoggingInterceptor } from 'src/common/interceptor/logger.interceptor';
 
 @Controller('bus-routes')
-@UseGuards(JwtAuthGuard)
-@UseInterceptors(LoggingInterceptor)
 export class BusRouteController {
   constructor(private busRouteService: BusRouteService) {}
 
   @Post()
-  async createBusRoute(@Body() busRouteDTO: BusRouteDTO) {
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(LoggingInterceptor)
+  createBusRoute(@Body() busRouteDTO: BusRouteDTO) {
     return this.busRouteService.createBusRoute(busRouteDTO);
   }
 
   @Get('possible-routes')
-  async listBusRoutes(@Query() query: RouteSearchDTO) {
+  listBusRoutes(@Query() query: RouteSearchDTO) {
     return this.busRouteService.listRoutesPossibleRoutes(query);
   }
 
-  @Get('possible-routes')
-  async listRoutesPossibleRoutes(@Query() query: RouteSearchDTO) {
-    return this.busRouteService.listRoutesPossibleRoutes(query);
+  @Get('from-coordinates')
+  listRoutesFromCoordinates(@Query() query: RoutesFromCoordinateshDTO) {
+    return this.busRouteService.listRoutesFromCoordinates(query);
   }
 
   @Get(':id')
-  async getBusRoute(@Param('id') id: string) {
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(LoggingInterceptor)
+  getBusRoute(@Param('id') id: string) {
     return this.busRouteService.getBusRoute(Number(id));
   }
 
   @Put(':id')
-  async updateBusRoute(
-    @Param('id') id: string,
-    @Body() busRouteDTO: BusRouteDTO,
-  ) {
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(LoggingInterceptor)
+  updateBusRoute(@Param('id') id: string, @Body() busRouteDTO: BusRouteDTO) {
     return this.busRouteService.updateBusRoute(Number(id), busRouteDTO);
   }
 
   @Delete(':id')
-  async deleteBusRoute(@Param('id') id: string) {
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(LoggingInterceptor)
+  deleteBusRoute(@Param('id') id: string) {
     return this.busRouteService.deleteBusRoute(Number(id));
   }
 }
