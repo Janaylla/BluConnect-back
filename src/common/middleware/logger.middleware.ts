@@ -1,7 +1,7 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { HTTPMethod } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
-import { PrismaService } from 'prisma/prisma.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
   constructor(private readonly prisma: PrismaService) { }

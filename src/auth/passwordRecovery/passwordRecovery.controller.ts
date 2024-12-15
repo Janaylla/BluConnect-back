@@ -4,7 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
-import { PrismaService } from 'prisma/prisma.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { CodeVerificationDto, ResetPasswordDto } from './passwordRecovery.dto';
 import { MailService } from 'src/mail/mail.service';
 import { User } from '@prisma/client';

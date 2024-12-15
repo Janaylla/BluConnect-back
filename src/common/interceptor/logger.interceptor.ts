@@ -5,7 +5,7 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { PrismaService } from 'prisma/prisma.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { tap, catchError } from 'rxjs/operators';
 import { HTTPMethod } from '@prisma/client';
 import { pathToModel } from './logger.constants';
