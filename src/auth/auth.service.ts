@@ -24,7 +24,9 @@ export class AuthService {
       password,
       active: true,
     };
-    const userExists = await this.userService.findUserByEmail(admin.email);
+    const userExists = await this.userService
+      .findUserByEmail(admin.email)
+      .catch(() => undefined);
     if (!userExists) {
       await this.userService.createUser(admin);
       console.log('Usuário inicial criado com sucesso');
