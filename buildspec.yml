@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 20.16.0
+      nodejs: 20
     commands:
       - echo Installing dependencies...
       - npm install
@@ -15,7 +15,8 @@ phases:
 
   post_build:
     commands:
-      - echo Build phase complete.
+      - echo Starting the application...
+      - npm run start:prod
 
 artifacts:
   files:
@@ -26,4 +27,4 @@ artifacts:
 
 env:
   variables:
-    NODE_ENV: "production" 
+    NODE_ENV: "production"
