@@ -11,7 +11,7 @@ phases:
       - npm install -g @nestjs/cli
       - npm install
       - npm install -g @prisma/client
-      - npx prisma generate
+      - npx prisma generate --schema=./prisma/schema.prisma
 
   build:
     commands:
