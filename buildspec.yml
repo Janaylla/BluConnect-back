@@ -13,11 +13,6 @@ phases:
       - npm install @prisma/client prisma
       - npm install
 
-  post_install:
-    commands:
-      - echo Fixing permissions...
-      - chmod -R 777 node_modules
-
   build:
     commands:
       - echo Building the project...
