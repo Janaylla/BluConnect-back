@@ -10,8 +10,6 @@ phases:
       - npm cache clean --force
       - npm install --include=dev
       - npm install -g @nestjs/cli
-      - echo "Logging in to Docker Hub..."
-      - docker login --username <your-docker-username> --password <your-docker-password>
 
   build:
     commands:
@@ -19,7 +17,7 @@ phases:
       - npm run build
       - docker build -t 727646491094.dkr.ecr.us-east-1.amazonaws.com/bluconnect-backend:latest .
       - echo Logging in to ECR...
-      # Usando o AWS CLI para realizar login no ECR
+      # Login no ECR (somente necessário para push no ECR)
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 727646491094.dkr.ecr.us-east-1.amazonaws.com
       - echo Pushing the Docker image to ECR...
       - docker push 727646491094.dkr.ecr.us-east-1.amazonaws.com/bluconnect-backend:latest
