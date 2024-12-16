@@ -10,6 +10,8 @@ phases:
       - npm cache clean --force
       - npm install --include=dev
       - npm install -g @nestjs/cli
+      - echo "Logging in to Docker Hub..."
+      - docker login --username <your-docker-username> --password <your-docker-password>
 
   build:
     commands:
