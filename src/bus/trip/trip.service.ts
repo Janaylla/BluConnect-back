@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BusRouteCreateDTO, TripCreateDTO, TripSearchDTO } from './trip.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'prisma/prisma.service';
 import { BusRouteDTO } from '../busRoute/busRoute.dto';
 
 @Injectable()
