@@ -10,8 +10,6 @@ phases:
       - npm install --include=dev
       - npm install -g @nestjs/cli
       - npm install
-      - npm install -g @prisma/client
-      - npx prisma generate
 
   build:
     commands:
