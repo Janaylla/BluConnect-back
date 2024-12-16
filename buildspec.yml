@@ -16,11 +16,6 @@ phases:
       - echo Building the project...
       - npm run build
 
-  post_build:
-    commands:
-      - echo Starting the application...
-      - npm run start:prod
-
 artifacts:
   files:
     - dist/**     
