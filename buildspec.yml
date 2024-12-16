@@ -8,12 +8,14 @@ phases:
       - rm -rf node_modules package-lock.json
       - echo Installing dependencies....
       - npm cache clean --force
-      - chmod -R 777 node_modules
       - npm install --include=dev
       - npm install -g @nestjs/cli
       - npm install @prisma/client prisma
       - npm install
-
+  post_install:
+    commands:
+      - echo Fixing permissions...
+      - chmod -R 777 node_modules
   build:
     commands:
       - echo Building the project...
