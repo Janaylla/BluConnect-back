@@ -10,7 +10,7 @@ phases:
       - npm cache clean --force
       - npm install --include=dev
       - npm install -g @nestjs/cli
-      - npm install @prisma/client prisma
+      - npm install prisma@4.15.0 @prisma/client@4.15.0
       - npm install
 
   build:
